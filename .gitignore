@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Ambientes virtuais
+venv/
+.venv/
+env/
+ENV/
+
+# Configuração local e segredos
+.env
+*.env
+instance/
+
+# Banco de dados e áudios enviados
+*.db
+*.sqlite
+*.sqlite3
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Editores e sistema
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Node (caso o frontend use ferramentas de build no futuro)
+node_modules/
+
+# Temporários do Word
+~$*
