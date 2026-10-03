@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "UNSUPPORTED_FORMAT",
+    "message": "Formato não suportado. Envie um arquivo WAV PCM de 16 bits.",
+    "details": { "received_extension": ".mp3" }
+  }
+}
