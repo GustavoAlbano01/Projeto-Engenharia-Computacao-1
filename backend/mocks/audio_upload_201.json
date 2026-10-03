@@ -1,0 +1,12 @@
+{
+  "id": 7,
+  "filename": "tom_440hz.wav",
+  "format": "wav_pcm",
+  "bits_per_sample": 16,
+  "sample_rate_hz": 44100,
+  "channels": 1,
+  "num_samples": 132300,
+  "duration_s": 3.0,
+  "size_bytes": 264644,
+  "uploaded_at": "2026-09-24T14:31:58Z"
+}

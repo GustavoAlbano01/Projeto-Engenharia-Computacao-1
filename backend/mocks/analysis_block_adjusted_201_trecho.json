@@ -1,0 +1,10 @@
+{
+  "params": { "block_size": 2048, "window": "rectangular" },
+  "warnings": [
+    {
+      "code": "BLOCK_SIZE_ADJUSTED",
+      "message": "O bloco solicitado (4096) é maior que o áudio. Foi usado 2048.",
+      "details": { "requested": 4096, "used": 2048 }
+    }
+  ]
+}
