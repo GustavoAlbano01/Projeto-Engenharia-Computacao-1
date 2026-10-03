@@ -99,7 +99,7 @@ Regras dos campos:
 ]
 ```
 
-**Erros possíveis:** `INVALID_PARAMETER` (400), `AUDIO_NOT_FOUND` (404), `INTERNAL_ERROR` (500).
+**Erros possíveis:** `INVALID_PARAMETER` (400), `AUDIO_TOO_SHORT` (400), `AUDIO_NOT_FOUND` (404), `INTERNAL_ERROR` (500).
 
 ### GET `/api/analyses` — histórico (resumo, sem vetores)
 
@@ -146,6 +146,7 @@ Envelope único:
 | `INVALID_WAV` | 400 | Cabeçalho RIFF/WAVE inválido ou arquivo corrompido |
 | `EMPTY_AUDIO` | 400 | WAV sem amostras |
 | `INVALID_PARAMETER` | 400 | `block_size`/`window` fora dos enums, JSON malformado ou campo faltando |
+| `AUDIO_TOO_SHORT` | 400 | Áudio com menos amostras que o menor bloco (512) — fluxo alternativo do RF002 |
 | `AUDIO_NOT_FOUND` | 404 | `audio_id` inexistente |
 | `ANALYSIS_NOT_FOUND` | 404 | `id` de análise inexistente |
 | `FILE_TOO_LARGE` | 413 | Upload acima de 60 MB |
