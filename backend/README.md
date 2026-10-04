@@ -20,7 +20,7 @@ ainda serão implementados estão marcados com `TODO` no código:
 
 - leitura real do WAV (cabeçalho RIFF/WAVE e metadados);
 - janelamento, FFT radix-2 e espectro médio;
-- persistência em SQLite com SQLAlchemy;
+- ligação das rotas ao banco (os modelos e o script de criação já existem);
 - espectrograma (RF006, desejável — hoje responde 501).
 
 ## Estrutura
@@ -28,13 +28,17 @@ ainda serão implementados estão marcados com `TODO` no código:
 ```
 backend/
 ├── run.py              ponto de entrada do servidor
+├── init_db.py          script que cria o banco SQLite
 ├── requirements.txt
 ├── mocks/              exemplos de resposta do contrato
 ├── uploads/            áudios enviados (não versionado)
+├── instance/           aea.db, o banco SQLite (não versionado)
 └── app/
     ├── __init__.py     create_app(): CORS, limite de upload, rotas
     ├── contract.py     constantes do contrato (janelas, blocos, limite)
     ├── errors.py       envelope único de erro
+    ├── database.py     conexão SQLite e criação das tabelas
+    ├── models.py       tabelas audios e analyses
     ├── mock_store.py   armazenamento temporário em memória
     └── routes/
         ├── audios.py   POST /api/audios
@@ -69,6 +73,23 @@ source .venv/bin/activate
 ### 3. Instalar as Dependências
 ```bash
 pip install -r requirements.txt
+```
+
+## Banco de dados
+
+Com o ambiente virtual ativo, dentro de `backend/`:
+
+```bash
+python init_db.py
+```
+
+Cria `instance/aea.db` com as tabelas `audios` e `analyses`. Pode ser rodado
+mais de uma vez: só cria o que falta e não apaga dados.
+
+Para apagar todo o histórico e recriar as tabelas (pede confirmação):
+
+```bash
+python init_db.py --reset
 ```
 
 ## Executar
