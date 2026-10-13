@@ -31,6 +31,10 @@ backend/uploads/*
 Thumbs.db
 desktop.ini
 
+
+# Sinais de teste gerados por backend/tools/gerar_sinais.py
+sinais_teste/
+
 # Node (caso o frontend use ferramentas de build no futuro)
 node_modules/
 
