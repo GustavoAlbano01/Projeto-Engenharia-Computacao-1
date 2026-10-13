@@ -31,6 +31,8 @@ backend/
 ├── init_db.py          script que cria o banco SQLite
 ├── requirements.txt
 ├── mocks/              exemplos de resposta do contrato
+├── tools/
+│   └── gerar_sinais.py gera os WAV de teste (T10)
 ├── uploads/            áudios enviados (não versionado)
 ├── instance/           aea.db, o banco SQLite (não versionado)
 └── app/
@@ -110,3 +112,24 @@ Com o ambiente virtual ativo, **na raiz do repositório**:
 ```bash
 python -m pytest -q
 ```
+
+## Sinais de teste
+
+Para validar o espectro (RF010) com sinais de frequência conhecida. Com o
+ambiente virtual ativo, **na raiz do repositório**:
+
+```bash
+python backend/tools/gerar_sinais.py
+```
+
+Cria a pasta `sinais_teste/` (não versionada) com WAV PCM 16 bits mono de
+3 s em 8000, 22050, 44100 e 48000 Hz:
+
+| Arquivo | Conteúdo | Pico esperado |
+|---|---|---|
+| `tom_440hz_<taxa>.wav` | tom puro, amplitude 0,5 | 440 Hz, magnitude perto de 0,5 |
+| `tom_1000hz_<taxa>.wav` | tom puro, amplitude 0,5 | 1000 Hz, magnitude perto de 0,5 |
+| `dois_tons_440_1000hz_<taxa>.wav` | 440 Hz + 1000 Hz, amplitude 0,4 cada | dois picos, perto de 0,4 |
+
+O arquivo `sinais_teste/sinais.csv` lista os parâmetros de cada WAV. Opções:
+`--taxas 44100 48000`, `--duracao 5` e `--saida outra_pasta`.
