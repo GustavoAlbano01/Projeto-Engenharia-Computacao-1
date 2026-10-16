@@ -1,0 +1,1 @@
+"""Processamento de sinais: leitura de WAV, janelas e FFT."""
