@@ -23,22 +23,28 @@ def now_iso():
 
 class MockStore:
     def __init__(self):
-        self._audio_template = _load("audio_upload_201.json")
         self._analysis_template = _load("analysis_create_201.json")
         self.audios = {}
+        self.stored_paths = {}  # id do áudio -> caminho do WAV em uploads/
         self.analyses = {}
         self._next_audio_id = 1
         self._next_analysis_id = 1
 
-    def add_audio(self, filename, size_bytes):
-        audio = copy.deepcopy(self._audio_template)
-        audio.update(
-            id=self._next_audio_id,
-            filename=filename,
-            size_bytes=size_bytes,
-            uploaded_at=now_iso(),
-        )
+    def add_audio(self, filename, size_bytes, metadata, stored_path):
+        """Guarda um áudio já validado, com os metadados reais do WAV (T12).
+
+        'metadata' vem de WavAudio.metadata(). O caminho do arquivo fica
+        guardado à parte porque não faz parte da resposta do contrato.
+        """
+        audio = {
+            "id": self._next_audio_id,
+            "filename": filename,
+            **metadata,
+            "size_bytes": size_bytes,
+            "uploaded_at": now_iso(),
+        }
         self.audios[audio["id"]] = audio
+        self.stored_paths[audio["id"]] = stored_path
         self._next_audio_id += 1
         return audio
 

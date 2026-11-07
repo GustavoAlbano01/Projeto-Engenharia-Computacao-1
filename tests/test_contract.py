@@ -1,12 +1,25 @@
 """Testes do contrato da API v1: formato das respostas e dos erros."""
 import io
+import wave
 
 from app.contract import MAX_UPLOAD_BYTES
 
-FAKE_WAV = b"RIFF" + b"\x00" * 100
+
+def make_wav(num_samples=8000, rate=8000):
+    """WAV PCM 16 bits mono de verdade (silêncio), montado em memória."""
+    buf = io.BytesIO()
+    with wave.open(buf, "wb") as w:
+        w.setnchannels(1)
+        w.setsampwidth(2)
+        w.setframerate(rate)
+        w.writeframes(b"\x00\x00" * num_samples)
+    return buf.getvalue()
 
 
-def upload(client, name="tom.wav", data=FAKE_WAV):
+VALID_WAV = make_wav()
+
+
+def upload(client, name="tom.wav", data=VALID_WAV):
     return client.post("/api/audios",
                        data={"file": (io.BytesIO(data), name)},
                        content_type="multipart/form-data")

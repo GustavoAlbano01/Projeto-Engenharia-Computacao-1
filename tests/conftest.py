@@ -9,5 +9,6 @@ from app import create_app  # noqa: E402
 
 
 @pytest.fixture
-def client():
-    return create_app().test_client()
+def client(tmp_path):
+    # Uploads vão para uma pasta temporária, não para backend/uploads/.
+    return create_app(upload_dir=tmp_path / "uploads").test_client()
