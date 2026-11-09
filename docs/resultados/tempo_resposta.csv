@@ -1,0 +1,13 @@
+block_size,window,media_s,max_s,atende_nf004
+512,rectangular,0.189,0.194,True
+512,hanning,0.183,0.184,True
+512,hamming,0.182,0.183,True
+1024,rectangular,0.206,0.223,True
+1024,hanning,0.192,0.198,True
+1024,hamming,0.194,0.196,True
+2048,rectangular,0.265,0.325,True
+2048,hanning,0.238,0.248,True
+2048,hamming,0.246,0.251,True
+4096,rectangular,0.355,0.371,True
+4096,hanning,0.342,0.344,True
+4096,hamming,0.346,0.348,True
