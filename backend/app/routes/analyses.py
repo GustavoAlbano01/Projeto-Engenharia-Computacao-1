@@ -2,6 +2,8 @@
 from flask import Blueprint, current_app, jsonify, request
 
 from ..contract import BLOCK_SIZES, WINDOWS
+from ..dsp.analysis import AudioTooShortError, analyze
+from ..dsp.wav_reader import read_wav
 from ..errors import ApiError
 
 bp = Blueprint("analyses", __name__)
@@ -11,12 +13,15 @@ def _store():
     return current_app.extensions["store"]
 
 
-def _get_analysis_or_404(analysis_id):
-    analysis = _store().analyses.get(analysis_id)
-    if analysis is None:
-        raise ApiError(404, "ANALYSIS_NOT_FOUND",
-                       "Análise não encontrada.", {"id": analysis_id})
-    return analysis
+def _analysis_not_found(analysis_id):
+    return ApiError(404, "ANALYSIS_NOT_FOUND",
+                    "Análise não encontrada.", {"id": analysis_id})
+
+
+def _audio_not_found(audio_id):
+    return ApiError(404, "AUDIO_NOT_FOUND",
+                    "Áudio não encontrado. Envie o arquivo novamente.",
+                    {"audio_id": audio_id})
 
 
 def _validate_params(body):
@@ -48,17 +53,30 @@ def _validate_params(body):
 def create_analysis():
     body = request.get_json(silent=True)
     audio_id, block_size, window = _validate_params(body)
+    store = _store()
 
-    audio = _store().audios.get(audio_id)
-    if audio is None:
-        raise ApiError(404, "AUDIO_NOT_FOUND",
-                       "Áudio não encontrado. Envie o arquivo novamente.",
-                       {"audio_id": audio_id})
+    # 1. O áudio existe no banco?
+    path = store.get_audio_path(audio_id)
+    if path is None:
+        raise _audio_not_found(audio_id)
 
-    # TODO (tarefa FFT): janelamento + FFT radix-2 + média de até 256 blocos.
-    # TODO (tarefa FFT): se o áudio tiver menos de 512 amostras, lançar
-    # ApiError(400, "AUDIO_TOO_SHORT", ...) conforme o contrato (RF002).
-    analysis = _store().add_analysis(audio, block_size, window)
+    # 2. O arquivo ainda existe no disco? (leitor do T11)
+    try:
+        wav = read_wav(path)
+    except FileNotFoundError as err:
+        raise _audio_not_found(audio_id) from err
+
+    # 3. Janela + FFT + média dos blocos (T14-T18, T20)
+    try:
+        result = analyze(wav.samples, wav.sample_rate_hz, block_size, window)
+    except AudioTooShortError as err:
+        raise ApiError(400, "AUDIO_TOO_SHORT",
+                       "O áudio é curto demais para análise "
+                       "(mínimo de 512 amostras).",
+                       {"reason": str(err)}) from err
+
+    # 4. Grava no banco e responde no formato do contrato
+    analysis = store.add_analysis(audio_id, result)
     return jsonify(analysis), 201
 
 
@@ -69,19 +87,23 @@ def list_analyses():
 
 @bp.get("/<int:analysis_id>")
 def get_analysis(analysis_id):
-    return jsonify(_get_analysis_or_404(analysis_id)), 200
+    analysis = _store().get_analysis(analysis_id)
+    if analysis is None:
+        raise _analysis_not_found(analysis_id)
+    return jsonify(analysis), 200
 
 
 @bp.delete("/<int:analysis_id>")
 def delete_analysis(analysis_id):
-    _get_analysis_or_404(analysis_id)
-    del _store().analyses[analysis_id]
+    if not _store().delete_analysis(analysis_id):
+        raise _analysis_not_found(analysis_id)
     return "", 204
 
 
 @bp.get("/<int:analysis_id>/spectrogram")
 def get_spectrogram(analysis_id):
-    _get_analysis_or_404(analysis_id)
+    if _store().get_analysis(analysis_id) is None:
+        raise _analysis_not_found(analysis_id)
     # RF006 é desejável: só depois dos essenciais.
     raise ApiError(501, "NOT_IMPLEMENTED",
                    "Espectrograma ainda não implementado.")

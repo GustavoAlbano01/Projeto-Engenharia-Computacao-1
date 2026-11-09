@@ -130,3 +130,20 @@ def test_cors_habilitado(client):
     resp = client.get("/api/analyses", headers={"Origin": "http://localhost:5173"})
     # o Flask-CORS devolve a própria origem quando origins="*"
     assert resp.headers.get("Access-Control-Allow-Origin") is not None
+
+def test_analise_audio_curto(client):
+    """Fluxo alternativo do RF002: menos de 512 amostras."""
+    audio_id = upload(client, data=make_wav(num_samples=400)).get_json()["id"]
+    resp = analyze(client, audio_id=audio_id, block_size=512, window="hanning")
+    assert_error(resp, 400, "AUDIO_TOO_SHORT")
+
+
+def test_analise_bloco_ajustado_pela_api(client):
+    """Fluxo alternativo do RF002: bloco maior que o áudio."""
+    audio_id = upload(client, data=make_wav(num_samples=3000)).get_json()["id"]
+    resp = analyze(client, audio_id=audio_id, block_size=4096, window="hanning")
+    assert resp.status_code == 201
+    a = resp.get_json()
+    assert a["params"]["block_size"] == 2048
+    assert a["warnings"][0]["code"] == "BLOCK_SIZE_ADJUSTED"
+    assert len(a["magnitudes"]) == 2048 // 2 + 1

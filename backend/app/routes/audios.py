@@ -63,8 +63,7 @@ def upload_audio():
     stored_path = upload_dir / stored_name
     stored_path.write_bytes(data)
 
-    # 7. Registra com os metadados reais.
-    # TODO (T20): gravar no banco (tabela audios) em vez do armazenamento em memória.
+    # 7. Registra no banco (tabela audios) com os metadados reais.
     record = current_app.extensions["store"].add_audio(
         filename=filename,
         size_bytes=len(data),

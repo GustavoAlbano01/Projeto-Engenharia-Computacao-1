@@ -14,14 +14,19 @@ Pasta `uploads/`: arquivos de áudio enviados (o conteúdo não é versionado).
 
 ## Estado atual
 
-As rotas já seguem o contrato v1 (validação dos parâmetros e formato dos erros),
-mas devolvem **dados de mock** (`mocks/`), guardados em memória. Os pontos que
-ainda serão implementados estão marcados com `TODO` no código:
+## Estado atual
 
-- leitura real do WAV (cabeçalho RIFF/WAVE e metadados);
-- janelamento, FFT radix-2 e espectro médio;
-- ligação das rotas ao banco (os modelos e o script de criação já existem);
-- espectrograma (RF006, desejável — hoje responde 501).
+As rotas seguem o contrato v1 e já funcionam com dados reais:
+
+- `POST /api/audios` lê e valida o WAV PCM 16 bits (T11, T12) e grava no banco;
+- `POST /api/analyses` aplica janela, FFT radix-2 própria e média de até
+  256 blocos (T14–T18, T20), e grava a análise no SQLite;
+- `GET` e `DELETE /api/analyses` leem e apagam do banco: o histórico
+  continua depois de reiniciar o servidor.
+
+Falta: espectrograma (RF006, desejável — hoje responde 501).
+
+Os arquivos de `mocks/` continuam como exemplos do contrato para o frontend.
 
 ## Estrutura
 
@@ -41,8 +46,8 @@ backend/
     ├── errors.py       envelope único de erro
     ├── database.py     conexão SQLite e criação das tabelas
     ├── models.py       tabelas audios e analyses
-    ├── mock_store.py   armazenamento temporário em memória
-    └── routes/
+    ├── db_store.py     grava e lê áudios e análises no SQLite
+    ├── dsp/            leitor WAV, janelas, DFT, FFT, espectro e análise    └── routes/
         ├── audios.py   POST /api/audios
         └── analyses.py /api/analyses (POST, GET, DELETE, espectrograma)
 ```
