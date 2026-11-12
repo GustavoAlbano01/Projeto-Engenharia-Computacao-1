@@ -40,3 +40,24 @@ def test_paginas_carregam_os_scripts_comuns(client):
         html = client.get(caminho).get_data(as_text=True)
         assert 'src="js/api.js"' in html, caminho
         assert 'src="js/comum.js"' in html, caminho
+
+PLOTLY = "vendor/plotly-2.35.2.min.js"
+
+
+def test_plotly_local(client):
+    resp = client.get("/" + PLOTLY)
+    assert resp.status_code == 200
+    assert len(resp.data) > 1_000_000      # ~4,5 MB: não é uma página de erro
+
+
+def test_telas_com_grafico_carregam_plotly_local(client):
+    for caminho in ("/", "/resultado.html"):
+        html = client.get(caminho).get_data(as_text=True)
+        assert f'src="{PLOTLY}"' in html, caminho
+
+
+def test_nenhuma_tela_usa_cdn(client):
+    """NF011: nada pode depender de internet."""
+    for caminho in ("/", "/historico.html", "/resultado.html"):
+        html = client.get(caminho).get_data(as_text=True)
+        assert "http://" not in html and "https://" not in html, caminho
