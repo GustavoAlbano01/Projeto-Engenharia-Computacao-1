@@ -50,10 +50,12 @@ def test_plotly_local(client):
     assert len(resp.data) > 1_000_000      # ~4,5 MB: não é uma página de erro
 
 
-def test_telas_com_grafico_carregam_plotly_local(client):
-    for caminho in ("/", "/resultado.html"):
+def test_so_a_tela_de_resultado_carrega_plotly(client):
+    """O Plotly (4,5 MB) só é carregado onde há gráfico (INT02)."""
+    assert f'src="{PLOTLY}"' in client.get("/resultado.html").get_data(as_text=True)
+    for caminho in ("/", "/historico.html"):
         html = client.get(caminho).get_data(as_text=True)
-        assert f'src="{PLOTLY}"' in html, caminho
+        assert "plotly" not in html, caminho
 
 
 def test_nenhuma_tela_usa_cdn(client):
@@ -69,3 +71,14 @@ def test_nenhum_script_carregado_duas_vezes(client):
         html = client.get(caminho).get_data(as_text=True)
         scripts = re.findall(r'<script src="([^"]+)"', html)
         assert len(scripts) == len(set(scripts)), (caminho, scripts)
+
+# ---------- INT01 (T23) ----------
+def test_int01_campos_do_formulario(client):
+    html = client.get("/").get_data(as_text=True)
+    assert 'type="file" id="arquivo" accept=".wav"' in html
+    for valor in ("512", "1024", "2048", "4096"):
+        assert f'<option value="{valor}"' in html
+    for valor in ("rectangular", "hanning", "hamming"):
+        assert f'<option value="{valor}"' in html
+    assert 'id="analisar" disabled' in html          # crítica da INT01
+    assert 'href="historico.html"' in html

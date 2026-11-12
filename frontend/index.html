@@ -18,40 +18,52 @@
   <main>
     <div id="mensagem" class="mensagem" hidden></div>
 
-    <!-- INT01: o formulário de envio entra aqui na T23 -->
+    <!-- INT01 - Tela inicial (RF001, RF002) -->
     <section class="cartao">
-      <h2>Nova análise</h2>
-      <p class="dica">Formulário de envio do áudio e dos parâmetros (T23).</p>
+      <h2>1. Arquivo de áudio</h2>
+      <label for="arquivo">Selecione um arquivo WAV</label>
+      <input type="file" id="arquivo" accept=".wav">
+      <p class="dica">Apenas WAV PCM de 16 bits, mono ou estéreo, até 60 MB.</p>
+
+      <div id="metadados" hidden>
+        <table>
+          <tr><th>Nome</th><td id="meta-nome"></td></tr>
+          <tr><th>Duração</th><td id="meta-duracao"></td></tr>
+          <tr><th>Taxa de amostragem</th><td id="meta-taxa"></td></tr>
+          <tr><th>Canais</th><td id="meta-canais"></td></tr>
+        </table>
+      </div>
     </section>
 
-    <!-- Verificação da base (T22): pode ser removida na T23 -->
     <section class="cartao">
-      <h2>Verificação da base</h2>
-      <p>Servidor: <span id="status-api">verificando...</span></p>
-      <p>Biblioteca de gráficos: <span id="status-plotly">verificando...</span></p>
+      <h2>2. Parâmetros da análise</h2>
+
+      <label for="bloco">Tamanho do bloco (amostras)</label>
+      <select id="bloco">
+        <option value="512">512</option>
+        <option value="1024" selected>1024</option>
+        <option value="2048">2048</option>
+        <option value="4096">4096</option>
+      </select>
+      <p class="dica">Blocos maiores dão mais resolução em frequência.</p>
+
+      <label for="janela">Função de janelamento</label>
+      <select id="janela">
+        <option value="rectangular">Retangular</option>
+        <option value="hanning" selected>Hanning</option>
+        <option value="hamming">Hamming</option>
+      </select>
+      <p class="dica">Hanning e Hamming reduzem o vazamento espectral.</p>
+
+      <p>
+        <button type="button" id="analisar" disabled>Analisar</button>
+      </p>
     </section>
+
+    <p><a href="historico.html">Ver histórico de análises</a></p>
   </main>
 
-  <script src="vendor/plotly-2.35.2.min.js"></script>
   <script src="js/api.js"></script>
   <script src="js/comum.js"></script>
-  <script>
-    // Plotly carregou? (cria a variável global "Plotly")
-    document.getElementById("status-plotly").textContent =
-      typeof Plotly !== "undefined"
-        ? `Plotly.js ${Plotly.version} carregado (local, sem internet)`
-        : "Plotly.js NÃO carregou";
-
-    // A API responde?
-    listarAnalises()
-      .then((lista) => {
-        document.getElementById("status-api").textContent =
-          `conectado (${lista.length} análise(s) no histórico)`;
-      })
-      .catch((erro) => {
-        document.getElementById("status-api").textContent = "sem conexão";
-        mostrarMensagem(erro.message, "erro");
-      });
-  </script>
 </body>
 </html>
