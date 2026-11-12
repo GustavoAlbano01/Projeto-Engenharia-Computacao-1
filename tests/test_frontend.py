@@ -29,3 +29,14 @@ def test_paginas_usam_o_estilo_comum(client):
     for caminho in ("/", "/historico.html", "/resultado.html"):
         html = client.get(caminho).get_data(as_text=True)
         assert 'href="css/estilo.css"' in html, caminho
+
+def test_scripts_comuns(client):
+    for caminho in ("/js/api.js", "/js/comum.js"):
+        assert client.get(caminho).status_code == 200, caminho
+
+
+def test_paginas_carregam_os_scripts_comuns(client):
+    for caminho in ("/", "/historico.html", "/resultado.html"):
+        html = client.get(caminho).get_data(as_text=True)
+        assert 'src="js/api.js"' in html, caminho
+        assert 'src="js/comum.js"' in html, caminho

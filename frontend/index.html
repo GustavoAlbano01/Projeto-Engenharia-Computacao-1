@@ -23,6 +23,24 @@
       <h2>Nova análise</h2>
       <p class="dica">Formulário de envio do áudio e dos parâmetros (T23).</p>
     </section>
+    <!-- Verificação da base (T22): pode ser removida na T23 -->
+    <section class="cartao">
+      <h2>Verificação da base</h2>
+      <p>Servidor: <span id="status-api">verificando...</span></p>
+    </section>
   </main>
+  <script src="js/api.js"></script>
+  <script src="js/comum.js"></script>
+    <script>
+    listarAnalises()
+      .then((lista) => {
+        document.getElementById("status-api").textContent =
+          `conectado (${lista.length} análise(s) no histórico)`;
+      })
+      .catch((erro) => {
+        document.getElementById("status-api").textContent = "sem conexão";
+        mostrarMensagem(erro.message, "erro");
+      });
+  </script>
 </body>
 </html>
