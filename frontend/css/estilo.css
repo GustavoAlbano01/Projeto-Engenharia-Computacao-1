@@ -1,0 +1,107 @@
+/* Estilo base de todas as telas (T22). */
+
+/* ---------- cores (variáveis) ---------- */
+:root {
+  --azul: #1f3864;
+  --azul-claro: #eaf0fa;
+  --texto: #222222;
+  --cinza: #6b6b6b;
+  --borda: #d0d7e2;
+  --fundo: #f6f8fb;
+  --erro: #b22222;
+  --erro-fundo: #fdecec;
+  --aviso: #8a5a00;
+  --aviso-fundo: #fff6e0;
+  --sucesso: #1d6b2f;
+  --sucesso-fundo: #e8f5ec;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: var(--texto);
+  background: var(--fundo);
+  line-height: 1.5;
+}
+
+/* ---------- cabeçalho e navegação ---------- */
+.topo {
+  background: var(--azul);
+  color: #ffffff;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.topo h1 { font-size: 1.2rem; margin: 0; }
+.topo nav a {
+  color: #ffffff;
+  text-decoration: none;
+  margin-left: 16px;
+}
+.topo nav a:hover,
+.topo nav a.ativo { text-decoration: underline; }
+
+/* ---------- conteúdo ---------- */
+main {
+  max-width: 960px;
+  margin: 24px auto;
+  padding: 0 16px;
+}
+
+.cartao {
+  background: #ffffff;
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.cartao h2 { margin-top: 0; color: var(--azul); font-size: 1.1rem; }
+
+/* ---------- formulários (INT01) ---------- */
+label { display: block; font-weight: 600; margin: 12px 0 4px; }
+.dica { color: var(--cinza); font-size: 0.9rem; }
+
+select, input[type="number"], input[type="file"] {
+  font: inherit;
+  padding: 6px 8px;
+  border: 1px solid var(--borda);
+  border-radius: 4px;
+  background: #ffffff;
+}
+
+button {
+  font: inherit;
+  padding: 8px 18px;
+  border: none;
+  border-radius: 4px;
+  background: var(--azul);
+  color: #ffffff;
+  cursor: pointer;
+}
+button:disabled { background: #9aa7bd; cursor: not-allowed; }
+button.secundario { background: #ffffff; color: var(--azul); border: 1px solid var(--azul); }
+button.perigo { background: var(--erro); }
+
+/* ---------- mensagens (NF002) ---------- */
+.mensagem {
+  padding: 10px 14px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  border-left: 4px solid;
+}
+.mensagem-erro    { color: var(--erro);    background: var(--erro-fundo); }
+.mensagem-aviso   { color: var(--aviso);   background: var(--aviso-fundo); }
+.mensagem-sucesso { color: var(--sucesso); background: var(--sucesso-fundo); }
+
+/* ---------- tabela (INT03) ---------- */
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--borda); }
+th { background: var(--azul-claro); }
+
+/* ---------- gráfico (INT02) ---------- */
+.grafico { width: 100%; height: 420px; }

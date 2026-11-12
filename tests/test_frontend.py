@@ -19,3 +19,13 @@ def test_api_continua_funcionando(client):
 
 def test_arquivo_inexistente_da_404(client):
     assert client.get("/nao-existe.html").status_code == 404
+
+def test_telas_e_estilo(client):
+    for caminho in ("/historico.html", "/resultado.html", "/css/estilo.css"):
+        assert client.get(caminho).status_code == 200, caminho
+
+
+def test_paginas_usam_o_estilo_comum(client):
+    for caminho in ("/", "/historico.html", "/resultado.html"):
+        html = client.get(caminho).get_data(as_text=True)
+        assert 'href="css/estilo.css"' in html, caminho

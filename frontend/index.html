@@ -2,10 +2,27 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Analisador Espectral de Áudio</title>
+  <link rel="stylesheet" href="css/estilo.css">
 </head>
 <body>
-  <h1>Analisador Espectral de Áudio</h1>
-  <p>Frontend servido pelo Flask.</p>
+  <header class="topo">
+    <h1>Analisador Espectral de Áudio</h1>
+    <nav>
+      <a href="index.html" class="ativo">Nova análise</a>
+      <a href="historico.html">Histórico</a>
+    </nav>
+  </header>
+
+  <main>
+    <div id="mensagem" class="mensagem" hidden></div>
+
+    <!-- INT01: o formulário de envio entra aqui na T23 -->
+    <section class="cartao">
+      <h2>Nova análise</h2>
+      <p class="dica">Formulário de envio do áudio e dos parâmetros (T23).</p>
+    </section>
+  </main>
 </body>
 </html>
