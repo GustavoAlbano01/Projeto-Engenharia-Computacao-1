@@ -82,3 +82,8 @@ def test_int01_campos_do_formulario(client):
         assert f'<option value="{valor}"' in html
     assert 'id="analisar" disabled' in html          # crítica da INT01
     assert 'href="historico.html"' in html
+
+def test_int01_carrega_o_script_da_tela(client):
+    html = client.get("/").get_data(as_text=True)
+    assert 'src="js/inicio.js"' in html
+    assert client.get("/js/inicio.js").status_code == 200
