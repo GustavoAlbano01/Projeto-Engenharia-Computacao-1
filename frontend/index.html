@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analisador Espectral de Áudio</title>
+  <link rel="stylesheet" href="css/estilo.css">
+</head>
+<body>
+  <header class="topo">
+    <h1>Analisador Espectral de Áudio</h1>
+    <nav>
+      <a href="index.html" class="ativo">Nova análise</a>
+      <a href="historico.html">Histórico</a>
+    </nav>
+  </header>
+
+  <main>
+    <div id="mensagem" class="mensagem" hidden></div>
+
+    <!-- INT01: o formulário de envio entra aqui na T23 -->
+    <section class="cartao">
+      <h2>Nova análise</h2>
+      <p class="dica">Formulário de envio do áudio e dos parâmetros (T23).</p>
+    </section>
+
+    <!-- Verificação da base (T22): pode ser removida na T23 -->
+    <section class="cartao">
+      <h2>Verificação da base</h2>
+      <p>Servidor: <span id="status-api">verificando...</span></p>
+      <p>Biblioteca de gráficos: <span id="status-plotly">verificando...</span></p>
+    </section>
+  </main>
+
+  <script src="vendor/plotly-2.35.2.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/comum.js"></script>
+  <script>
+    // Plotly carregou? (cria a variável global "Plotly")
+    document.getElementById("status-plotly").textContent =
+      typeof Plotly !== "undefined"
+        ? `Plotly.js ${Plotly.version} carregado (local, sem internet)`
+        : "Plotly.js NÃO carregou";
+
+    // A API responde?
+    listarAnalises()
+      .then((lista) => {
+        document.getElementById("status-api").textContent =
+          `conectado (${lista.length} análise(s) no histórico)`;
+      })
+      .catch((erro) => {
+        document.getElementById("status-api").textContent = "sem conexão";
+        mostrarMensagem(erro.message, "erro");
+      });
+  </script>
+</body>
+</html>

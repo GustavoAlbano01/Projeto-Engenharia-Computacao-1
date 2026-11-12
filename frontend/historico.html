@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Histórico - Analisador Espectral de Áudio</title>
+  <link rel="stylesheet" href="css/estilo.css">
+</head>
+<body>
+  <header class="topo">
+    <h1>Analisador Espectral de Áudio</h1>
+    <nav>
+      <a href="index.html">Nova análise</a>
+      <a href="historico.html" class="ativo">Histórico</a>
+    </nav>
+  </header>
+
+  <main>
+    <div id="mensagem" class="mensagem" hidden></div>
+
+    <!-- INT03: tabela do histórico (T27) e exclusão (T28) -->
+    <section class="cartao">
+      <h2>Histórico de análises</h2>
+      <p class="dica">Tabela com as análises salvas (T27).</p>
+    </section>
+  </main>
+  <script src="js/api.js"></script>
+  <script src="js/comum.js"></script>
+</body>
+</html>
