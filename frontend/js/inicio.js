@@ -63,3 +63,23 @@ function mostrarMetadados(audio) {
     audio.channels === 1 ? "1 (mono)" : `${audio.channels} (estéreo)`;
   document.getElementById("metadados").hidden = false;
 }
+
+/* ---------- 2. Análise (RF002, RF003) ---------- */
+botaoAnalisar.addEventListener("click", async () => {
+  if (audioId === null) return;
+
+  botaoAnalisar.disabled = true;
+  campoArquivo.disabled = true;
+  mostrarMensagem("Calculando o espectro...", "aviso");
+  try {
+    const analise = await criarAnalise(
+      audioId,
+      Number(campoBloco.value),     // "1024" -> 1024 (o contrato pede número)
+      campoJanela.value);
+    window.location.href = `resultado.html?id=${analise.id}`;
+  } catch (erro) {
+    mostrarMensagem(erro.message);
+    botaoAnalisar.disabled = false;
+    campoArquivo.disabled = false;
+  }
+});
