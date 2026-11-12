@@ -61,3 +61,11 @@ def test_nenhuma_tela_usa_cdn(client):
     for caminho in ("/", "/historico.html", "/resultado.html"):
         html = client.get(caminho).get_data(as_text=True)
         assert "http://" not in html and "https://" not in html, caminho
+
+def test_nenhum_script_carregado_duas_vezes(client):
+    """Carregar o mesmo .js duas vezes gera 'Identifier already declared'."""
+    import re
+    for caminho in ("/", "/historico.html", "/resultado.html"):
+        html = client.get(caminho).get_data(as_text=True)
+        scripts = re.findall(r'<script src="([^"]+)"', html)
+        assert len(scripts) == len(set(scripts)), (caminho, scripts)
