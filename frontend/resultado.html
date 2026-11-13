@@ -19,14 +19,47 @@
     <div id="mensagem" class="mensagem" hidden></div>
 
     <!-- INT02: aberta como resultado.html?id=N (após analisar ou pelo histórico) -->
-    <section class="cartao">
+    <section class="cartao" id="cartao-resumo" hidden>
       <h2>Resultado da análise</h2>
-      <p class="dica">Informações, parâmetros e pico (T24).</p>
+      <table>
+        <tr><th>Arquivo</th><td id="res-arquivo"></td></tr>
+        <tr><th>Data da análise</th><td id="res-data"></td></tr>
+        <tr><th>Taxa de amostragem</th><td id="res-taxa"></td></tr>
+        <tr><th>Tamanho do bloco</th><td id="res-bloco"></td></tr>
+        <tr><th>Janela</th><td id="res-janela"></td></tr>
+        <tr><th>Blocos usados na média</th><td id="res-blocos"></td></tr>
+        <tr><th>Resolução em frequência</th><td id="res-resolucao"></td></tr>
+        <tr><th>Frequência de pico</th><td id="res-pico"></td></tr>
+      </table>
+      <p class="dica">Esta análise foi salva no histórico.</p>
+    </section>
+
+    <!-- RF004: gráfico do espectro (magnitude x frequência) -->
+    <section class="cartao" id="cartao-grafico" hidden>
+      <h2>Espectro de frequências</h2>
+      <label for="escala">Escala da magnitude</label>
+      <select id="escala">
+        <option value="linear" selected>Linear</option>
+        <option value="db">Decibéis (dB)</option>
+      </select>
+      
+      <!-- RF005: leitura sob o cursor, zoom e restaurar -->
+      <div class="barra-grafico">
+        <p id="leitura" class="leitura">Passe o mouse sobre o gráfico.</p>
+        <button type="button" id="restaurar" class="secundario" disabled>
+          Restaurar visualização
+        </button>
+      </div>
+      <p id="faixa" class="dica">Exibindo de 0 Hz até a frequência de Nyquist.</p>
       <div id="grafico" class="grafico"></div>
+      <p class="dica">Arraste sobre o gráfico para ampliar uma região. Para
+        voltar, use “Restaurar visualização” ou clique duas vezes no gráfico.</p>
     </section>
   </main>
+
   <script src="vendor/plotly-2.35.2.min.js"></script>
   <script src="js/api.js"></script>
   <script src="js/comum.js"></script>
+  <script src="js/resultado.js"></script>
 </body>
 </html>

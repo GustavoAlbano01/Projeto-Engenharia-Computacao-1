@@ -87,3 +87,29 @@ def test_int01_carrega_o_script_da_tela(client):
     html = client.get("/").get_data(as_text=True)
     assert 'src="js/inicio.js"' in html
     assert client.get("/js/inicio.js").status_code == 200
+
+# ---------- INT02 (T24) ----------
+def test_int02_campos_do_resumo_e_grafico(client):
+    html = client.get("/resultado.html").get_data(as_text=True)
+    for campo in ("res-arquivo", "res-taxa", "res-bloco", "res-janela",
+                  "res-blocos", "res-resolucao", "res-pico", "grafico",
+                  "escala"):
+        assert f'id="{campo}"' in html, campo
+
+def test_int02_carrega_o_script_depois_do_plotly(client):
+    html = client.get("/resultado.html").get_data(as_text=True)
+    assert 'src="js/resultado.js"' in html
+    assert html.index(PLOTLY) < html.index("js/resultado.js")
+    assert client.get("/js/resultado.js").status_code == 200
+
+# ---------- INT02 (T25) ----------
+def test_int02_leitura_e_restaurar(client):
+    html = client.get("/resultado.html").get_data(as_text=True)
+    assert 'id="leitura"' in html                    # leitura sob o cursor
+    assert 'id="faixa"' in html                      # faixa exibida
+    assert 'id="restaurar" class="secundario" disabled' in html
+
+
+def test_int02_estilo_da_barra_do_grafico(client):
+    css = client.get("/css/estilo.css").get_data(as_text=True)
+    assert ".barra-grafico" in css and ".leitura" in css
