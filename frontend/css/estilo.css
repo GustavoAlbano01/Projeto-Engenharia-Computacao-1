@@ -105,3 +105,22 @@ th { background: var(--azul-claro); }
 
 /* ---------- gráfico (INT02) ---------- */
 .grafico { width: 100%; height: 420px; }
+
+
+/* ---------- interação com o gráfico (INT02) ---------- */
+.barra-grafico {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+}
+.leitura {
+  margin: 0;
+  padding: 6px 10px;
+  min-width: 280px;
+  background: var(--azul-claro);
+  border-radius: 4px;
+  font-variant-numeric: tabular-nums;   /* números não "pulam" ao mudar */
+}

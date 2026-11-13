@@ -42,10 +42,18 @@
         <option value="linear" selected>Linear</option>
         <option value="db">Decibéis (dB)</option>
       </select>
+      
+      <!-- RF005: leitura sob o cursor, zoom e restaurar -->
+      <div class="barra-grafico">
+        <p id="leitura" class="leitura">Passe o mouse sobre o gráfico.</p>
+        <button type="button" id="restaurar" class="secundario" disabled>
+          Restaurar visualização
+        </button>
+      </div>
+      <p id="faixa" class="dica">Exibindo de 0 Hz até a frequência de Nyquist.</p>
       <div id="grafico" class="grafico"></div>
-      <p class="dica">Passe o mouse sobre a linha para ler a frequência e a
-        magnitude. Arraste para ampliar uma região e clique duas vezes para
-        restaurar.</p>
+      <p class="dica">Arraste sobre o gráfico para ampliar uma região. Para
+        voltar, use “Restaurar visualização” ou clique duas vezes no gráfico.</p>
     </section>
   </main>
 
