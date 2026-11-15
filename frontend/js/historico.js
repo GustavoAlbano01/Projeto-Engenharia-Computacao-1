@@ -58,15 +58,44 @@ function criarLinha(analise) {
     tr.appendChild(td);
   }
 
-  // Ações: reabrir a análise (RF008). A exclusão (RF009) entra na T28.
+  // Ações: reabrir a análise (RF008).
   const acoes = document.createElement("td");
   const abrir = document.createElement("a");
   abrir.href = `resultado.html?id=${analise.id}`;
   abrir.textContent = "Abrir";
   acoes.appendChild(abrir);
+
+  // Excluir, com confirmação (RF009 - T28)
+  const excluir = document.createElement("button");
+  excluir.type = "button";
+  excluir.className = "perigo pequeno";
+  excluir.textContent = "Excluir";
+  excluir.addEventListener("click", () => confirmarExclusao(analise, excluir));
+  acoes.appendChild(excluir);
+
   tr.appendChild(acoes);
 
   return tr;
+}
+
+/* RF009 - pede confirmação e exclui a análise (T28). */
+async function confirmarExclusao(analise, botao) {
+  const quando = formatarData(analise.created_at);
+  const certeza = window.confirm(
+    `Excluir a análise de "${analise.audio.filename}" (${quando})?\n\n` +
+    "Esta ação não pode ser desfeita.");
+  if (!certeza) return;                      // usuário clicou em Cancelar
+
+  botao.disabled = true;                     // evita clique duplo
+  try {
+    await excluirAnalise(analise.id);        // DELETE /api/analyses/{id}
+  } catch (erro) {
+    await carregarHistorico();               // a lista pode ter mudado
+    mostrarMensagem(erro.message);
+    return;
+  }
+  await carregarHistorico();                 // redesenha sem a linha
+  mostrarMensagem("Análise excluída do histórico.", "sucesso");
 }
 
 carregarHistorico();

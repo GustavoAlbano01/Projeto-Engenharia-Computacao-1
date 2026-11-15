@@ -128,3 +128,10 @@ def test_int03_carrega_o_script_da_tela(client):
     html = client.get("/historico.html").get_data(as_text=True)
     assert 'src="js/historico.js"' in html
     assert client.get("/js/historico.js").status_code == 200
+
+def test_int03_exclusao_com_confirmacao(client):
+    js = client.get("/js/historico.js").get_data(as_text=True)
+    assert "window.confirm(" in js            # RF009: pede confirmação
+    assert "excluirAnalise(" in js            # usa o api.js (DELETE)
+    css = client.get("/css/estilo.css").get_data(as_text=True)
+    assert "button.pequeno" in css
