@@ -18,13 +18,32 @@
   <main>
     <div id="mensagem" class="mensagem" hidden></div>
 
-    <!-- INT03: tabela do histórico (T27) e exclusão (T28) -->
+    <!-- INT03 - Tela de histórico (RF007, RF008) -->
     <section class="cartao">
       <h2>Histórico de análises</h2>
-      <p class="dica">Tabela com as análises salvas (T27).</p>
+
+      <p id="vazio" hidden>
+        Ainda não há análises salvas.
+        <a href="index.html">Fazer a primeira análise</a>.
+      </p>
+
+      <table id="tabela" hidden>
+        <thead>
+          <tr>
+            <th>Data e hora</th>
+            <th>Arquivo</th>
+            <th>Bloco</th>
+            <th>Janela</th>
+            <th>Frequência de pico</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="linhas"></tbody>
+      </table>
     </section>
   </main>
   <script src="js/api.js"></script>
   <script src="js/comum.js"></script>
+  <script src="js/historico.js"></script>
 </body>
 </html>
