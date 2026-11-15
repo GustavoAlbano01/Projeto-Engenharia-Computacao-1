@@ -124,3 +124,7 @@ th { background: var(--azul-claro); }
   border-radius: 4px;
   font-variant-numeric: tabular-nums;   /* números não "pulam" ao mudar */
 }
+
+/* ---------- ações da tabela do histórico (INT03) ---------- */
+td a + button { margin-left: 12px; }
+button.pequeno { padding: 4px 10px; font-size: 0.9rem; }
