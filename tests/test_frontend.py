@@ -113,3 +113,18 @@ def test_int02_leitura_e_restaurar(client):
 def test_int02_estilo_da_barra_do_grafico(client):
     css = client.get("/css/estilo.css").get_data(as_text=True)
     assert ".barra-grafico" in css and ".leitura" in css
+
+# ---------- INT03 (T27) ----------
+def test_int03_tabela_e_historico_vazio(client):
+    html = client.get("/historico.html").get_data(as_text=True)
+    for coluna in ("Data e hora", "Arquivo", "Bloco", "Janela",
+                   "Frequência de pico", "Ações"):
+        assert f"<th>{coluna}</th>" in html, coluna
+    assert 'id="linhas"' in html
+    assert 'id="vazio"' in html and "Ainda não há análises salvas" in html
+
+
+def test_int03_carrega_o_script_da_tela(client):
+    html = client.get("/historico.html").get_data(as_text=True)
+    assert 'src="js/historico.js"' in html
+    assert client.get("/js/historico.js").status_code == 200
