@@ -147,3 +147,52 @@ def test_analise_bloco_ajustado_pela_api(client):
     assert a["params"]["block_size"] == 2048
     assert a["warnings"][0]["code"] == "BLOCK_SIZE_ADJUSTED"
     assert len(a["magnitudes"]) == 2048 // 2 + 1
+
+
+
+# ---------- T26: GET /api/analyses e GET /api/analyses/{id} ----------
+def test_historico_mais_recente_primeiro(client):
+    audio_id = upload(client).get_json()["id"]
+    ids = [analyze(client, audio_id=audio_id, block_size=b,
+                   window="hanning").get_json()["id"]
+           for b in (512, 1024, 2048)]
+    lista = client.get("/api/analyses").get_json()
+    assert [a["id"] for a in lista] == list(reversed(ids))
+
+
+def test_historico_campos_do_resumo(client):
+    audio_id = upload(client).get_json()["id"]
+    analyze(client, audio_id=audio_id, block_size=1024, window="hanning")
+    resumo = client.get("/api/analyses").get_json()[0]
+    assert set(resumo) == {"id", "created_at", "audio", "params", "peak"}
+    assert set(resumo["audio"]) == {"id", "filename"}
+    assert set(resumo["params"]) == {"block_size", "window"}
+    assert set(resumo["peak"]) == {"frequency_hz", "magnitude"}
+
+
+def test_get_por_id_igual_ao_post(client):
+    audio_id = upload(client).get_json()["id"]
+    criada = analyze(client, audio_id=audio_id, block_size=1024,
+                     window="hamming").get_json()
+    lida = client.get(f"/api/analyses/{criada['id']}").get_json()
+    assert lida == criada
+
+
+def test_get_por_id_inexistente(client):
+    assert_error(client.get("/api/analyses/999"), 404, "ANALYSIS_NOT_FOUND")
+
+
+def test_historico_continua_depois_de_reiniciar(tmp_path):
+    """NF007: o histórico fica no SQLite, não na memória do servidor."""
+    from app import create_app
+    db_url = f"sqlite:///{tmp_path / 'aea.db'}"
+    pasta = tmp_path / "uploads"
+
+    primeiro = create_app(upload_dir=pasta, db_url=db_url).test_client()
+    audio_id = upload(primeiro).get_json()["id"]
+    criada = analyze(primeiro, audio_id=audio_id, block_size=1024,
+                     window="hanning").get_json()
+
+    reiniciado = create_app(upload_dir=pasta, db_url=db_url).test_client()
+    assert [a["id"] for a in reiniciado.get("/api/analyses").get_json()] == [criada["id"]]
+    assert reiniciado.get(f"/api/analyses/{criada['id']}").get_json() == criada
