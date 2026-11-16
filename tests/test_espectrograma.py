@@ -1,7 +1,8 @@
 """Espectrograma (T29 - RF006)."""
 import numpy as np
 
-from app.dsp.spectrogram import MAX_COLUNAS, spectrogram_db, spectrogram_png
+from app.dsp.spectrogram import (MAX_COLUNAS, numero_br, spectrogram_db,
+                                 spectrogram_png)
 
 FS = 44100
 
@@ -37,3 +38,13 @@ def test_audio_longo_limita_colunas():
 def test_png_valido():
     png = spectrogram_png(np.zeros(4096), FS, 1024, "hanning", "teste")
     assert png[:8] == b"\x89PNG\r\n\x1a\n"    # assinatura de todo arquivo PNG
+
+def test_numeros_no_padrao_brasileiro():
+    """NF001: os eixos da imagem usam vírgula decimal e ponto de milhar."""
+    assert numero_br(0) == "0"
+    assert numero_br(0.5) == "0,5"
+    assert numero_br(0.05) == "0,05"
+    assert numero_br(2500) == "2.500"
+    assert numero_br(22050) == "22.050"
+    assert numero_br(-20) == "-20"
+    assert numero_br(1234567.5) == "1.234.567,5"

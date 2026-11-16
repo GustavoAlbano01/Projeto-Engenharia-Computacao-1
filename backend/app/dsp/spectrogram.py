@@ -1,14 +1,9 @@
-"""Espectrograma (T29 - RF006, desejável).
-
-Divide o áudio em blocos sucessivos, calcula a FFT própria (T16) de cada
-um com o bloco e a janela da análise, e monta uma imagem PNG (Matplotlib):
-tempo no eixo x, frequência no eixo y e magnitude (dB) pela cor.
-"""
 import io
 
 import matplotlib
 matplotlib.use("Agg")      # sem janela: só gera arquivos (servidor web)
 from matplotlib.figure import Figure  # noqa: E402
+from matplotlib.ticker import FuncFormatter  # noqa: E402
 import numpy as np                     # noqa: E402
 
 from .fft import fft                   # noqa: E402
@@ -20,6 +15,10 @@ MAX_COLUNAS = 1000    # colunas (blocos) além disso não cabem na imagem
 MAX_LINHAS = 256      # menos linhas que a altura do gráfico (~310 px)
 BLOCOS_POR_LOTE = 256 # FFTs calculadas de cada vez (limita a memória)
 
+def numero_br(valor, _posicao=None):
+    """Número no padrão brasileiro (NF001): 20000 -> "20.000"; 0.5 -> "0,5"."""
+    texto = f"{valor:,.3f}".rstrip("0").rstrip(".")      # "20,000" / "0.5"
+    return texto.translate(str.maketrans(",.", ".,"))     # troca , e .
 
 def spectrogram_db(samples, sample_rate_hz, block_size, window):
     """Devolve (tempos_s, freqs_hz, db), com db no formato blocos x (N/2+1)."""
@@ -67,7 +66,10 @@ def spectrogram_png(samples, sample_rate_hz, block_size, window, titulo=""):
     ax.set_xlabel("Tempo (s)")
     ax.set_ylabel("Frequência (Hz)")
     ax.set_title(titulo)
-    fig.colorbar(img, ax=ax, label="Magnitude (dB)")
+    barra = fig.colorbar(img, ax=ax, label="Magnitude (dB)")
+    formato = FuncFormatter(numero_br)
+    for eixo in (ax.xaxis, ax.yaxis, barra.ax.yaxis):
+        eixo.set_major_formatter(formato)
     fig.tight_layout()
 
     buffer = io.BytesIO()

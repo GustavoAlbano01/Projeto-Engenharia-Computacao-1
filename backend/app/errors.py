@@ -4,6 +4,7 @@ Toda falha da API passa por aqui (NF002 e NF003): nenhuma exceção
 derruba o servidor, todas viram JSON com código HTTP adequado.
 """
 from flask import jsonify
+from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.exceptions import HTTPException
 
 
@@ -36,13 +37,28 @@ def register_error_handlers(app):
             "FILE_TOO_LARGE",
             "O arquivo excede o limite de 60 MB.",
         )), 413
-
+    
+    @app.errorhandler(SQLAlchemyError)
+    def handle_database(err):
+        # Falha ao ler ou gravar no SQLite (T30 - NF002). O código continua
+        # INTERNAL_ERROR (contrato), mas a mensagem diz o que aconteceu.
+        app.logger.exception(err)
+        return jsonify(error_body(
+            "INTERNAL_ERROR",
+            "Não foi possível acessar o banco de dados do histórico. "
+            "Feche outros programas que estejam usando o arquivo e tente novamente.",
+        )), 500
+    
     @app.errorhandler(HTTPException)
     def handle_http(err):
         # 404 de rota inexistente, 405 de método errado etc.
+        mensagens = {
+            404: "Endereço não encontrado.",
+            405: "Operação não permitida neste endereço.",
+        }
         return jsonify(error_body(
             "HTTP_" + str(err.code),
-            "Requisição inválida para esta rota.",
+            mensagens.get(err.code, "Requisição inválida para esta rota."),
         )), err.code
 
     @app.errorhandler(Exception)

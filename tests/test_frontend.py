@@ -147,3 +147,16 @@ def test_int02_espectrograma_sob_demanda(client):
     assert "URL.createObjectURL(" in js
     api = client.get("/js/api.js").get_data(as_text=True)
     assert "/spectrogram" in api
+
+# ---------- T30: interface em português (NF001) ----------
+LOCALE = "vendor/plotly-locale-pt-br-2.35.2.js"
+
+
+def test_plotly_em_portugues(client):
+    traducao = client.get("/" + LOCALE).get_data(as_text=True)
+    assert "Plotly.register(" in traducao
+    assert "'Double-click to zoom back out': 'Duplo clique para reverter zoom'" in traducao
+    html = client.get("/resultado.html").get_data(as_text=True)
+    assert html.index(PLOTLY) < html.index(LOCALE)    # tradução depois do Plotly
+    js = client.get("/js/resultado.js").get_data(as_text=True)
+    assert 'locale: "pt-BR"' in js
