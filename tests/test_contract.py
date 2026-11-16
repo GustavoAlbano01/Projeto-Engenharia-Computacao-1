@@ -223,3 +223,28 @@ def test_espectrograma_wav_apagado_do_disco(client, tmp_path):
         arquivo.unlink()
     assert_error(client.get(f"/api/analyses/{analise['id']}/spectrogram"),
                  404, "AUDIO_NOT_FOUND")
+    
+# ---------- T30: mensagens de erro claras (NF002) ----------
+def test_erro_de_banco_tem_mensagem_clara(client):
+    from sqlalchemy.exc import OperationalError
+
+    def banco_travado(*args, **kwargs):
+        raise OperationalError("SELECT", {}, Exception("database is locked"))
+
+    client.application.extensions["store"].list_summaries = banco_travado
+    resp = client.get("/api/analyses")
+    assert_error(resp, 500, "INTERNAL_ERROR")
+    assert "banco de dados" in resp.get_json()["error"]["message"]
+
+
+def test_upload_sem_arquivo_sem_jargao(client):
+    resp = client.post("/api/audios", data={},
+                       content_type="multipart/form-data")
+    assert_error(resp, 400, "FILE_MISSING")
+    assert "'file'" not in resp.get_json()["error"]["message"]
+
+
+def test_endereco_inexistente(client):
+    resp = client.get("/api/nao-existe")
+    assert resp.status_code == 404
+    assert resp.get_json()["error"]["message"] == "Endereço não encontrado."

@@ -30,7 +30,7 @@ def upload_audio():
     file = request.files.get("file")
     if file is None or file.filename == "":
         raise ApiError(400, "FILE_MISSING",
-                       "Nenhum arquivo foi enviado no campo 'file'.")
+                       "Nenhum arquivo foi enviado. Selecione um arquivo WAV.")
 
     # 2. A extensão é .wav?
     filename = file.filename
