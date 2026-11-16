@@ -141,6 +141,7 @@ function desenharGrafico(a, escala) {
   const config = {
     responsive: true,
     displaylogo: false,
+    locale: "pt-BR", 
     modeBarButtonsToRemove: ["select2d", "lasso2d"],
   };
 
