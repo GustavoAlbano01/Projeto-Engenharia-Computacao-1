@@ -1,8 +1,9 @@
 """RF002/RF003 (POST), RF007 (GET lista), RF008 (GET id), RF009 (DELETE), RF006."""
-from flask import Blueprint, current_app, jsonify, request
+from flask import Blueprint, Response, current_app, jsonify, request
 
 from ..contract import BLOCK_SIZES, WINDOWS
 from ..dsp.analysis import AudioTooShortError, analyze
+from ..dsp.spectrogram import spectrogram_png
 from ..dsp.wav_reader import read_wav
 from ..errors import ApiError
 
@@ -102,8 +103,27 @@ def delete_analysis(analysis_id):
 
 @bp.get("/<int:analysis_id>/spectrogram")
 def get_spectrogram(analysis_id):
-    if _store().get_analysis(analysis_id) is None:
+    """RF006 (desejável): imagem PNG do espectrograma (T29)."""
+    store = _store()
+
+    # 1. A análise existe? (dela vêm o áudio, o bloco e a janela)
+    analysis = store.get_analysis(analysis_id)
+    if analysis is None:
         raise _analysis_not_found(analysis_id)
-    # RF006 é desejável: só depois dos essenciais.
-    raise ApiError(501, "NOT_IMPLEMENTED",
-                   "Espectrograma ainda não implementado.")
+
+    # 2. O WAV ainda existe no disco?
+    audio_id = analysis["audio"]["id"]
+    path = store.get_audio_path(audio_id)
+    if path is None:
+        raise _audio_not_found(audio_id)
+    try:
+        wav = read_wav(path)
+    except FileNotFoundError as err:
+        raise _audio_not_found(audio_id) from err
+
+    # 3. Mesmo bloco e mesma janela da análise (RF006)
+    params = analysis["params"]
+    png = spectrogram_png(wav.samples, wav.sample_rate_hz,
+                          params["block_size"], params["window"],
+                          titulo=analysis["audio"]["filename"])
+    return Response(png, mimetype="image/png")

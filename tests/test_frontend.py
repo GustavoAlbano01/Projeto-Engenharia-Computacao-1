@@ -135,3 +135,15 @@ def test_int03_exclusao_com_confirmacao(client):
     assert "excluirAnalise(" in js            # usa o api.js (DELETE)
     css = client.get("/css/estilo.css").get_data(as_text=True)
     assert "button.pequeno" in css
+
+# ---------- INT02: espectrograma (T29) ----------
+def test_int02_espectrograma_sob_demanda(client):
+    html = client.get("/resultado.html").get_data(as_text=True)
+    assert 'id="cartao-espectrograma" hidden' in html
+    assert 'id="ver-espectrograma"' in html
+    assert 'src="js/espectrograma.js"' in html
+    js = client.get("/js/espectrograma.js").get_data(as_text=True)
+    assert "buscarEspectrograma(" in js           # passa pelo api.js
+    assert "URL.createObjectURL(" in js
+    api = client.get("/js/api.js").get_data(as_text=True)
+    assert "/spectrogram" in api

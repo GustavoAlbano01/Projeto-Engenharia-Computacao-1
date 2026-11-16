@@ -55,11 +55,24 @@
       <p class="dica">Arraste sobre o gráfico para ampliar uma região. Para
         voltar, use “Restaurar visualização” ou clique duas vezes no gráfico.</p>
     </section>
+    
+    <!-- RF006 (desejável): espectrograma - T29 -->
+    <section class="cartao" id="cartao-espectrograma" hidden>
+      <h2>Espectrograma</h2>
+      <p class="dica">Mostra como as frequências mudam ao longo do tempo:
+        tempo no eixo horizontal, frequência no vertical e a intensidade
+        pela cor (quanto mais clara, mais forte).</p>
+      <button type="button" id="ver-espectrograma">Ver espectrograma</button>
+      <p id="status-espectrograma" class="dica" hidden></p>
+      <img id="espectrograma" class="espectrograma"
+           alt="Espectrograma da análise" hidden>
+    </section>
   </main>
 
   <script src="vendor/plotly-2.35.2.min.js"></script>
   <script src="js/api.js"></script>
   <script src="js/comum.js"></script>
   <script src="js/resultado.js"></script>
+  <script src="js/espectrograma.js"></script>
 </body>
 </html>

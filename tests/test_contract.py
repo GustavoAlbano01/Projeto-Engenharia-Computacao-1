@@ -196,3 +196,30 @@ def test_historico_continua_depois_de_reiniciar(tmp_path):
     reiniciado = create_app(upload_dir=pasta, db_url=db_url).test_client()
     assert [a["id"] for a in reiniciado.get("/api/analyses").get_json()] == [criada["id"]]
     assert reiniciado.get(f"/api/analyses/{criada['id']}").get_json() == criada
+
+
+
+# ---------- T29: GET /api/analyses/{id}/spectrogram ----------
+def test_espectrograma_png(client):
+    audio_id = upload(client).get_json()["id"]
+    analise = analyze(client, audio_id=audio_id, block_size=1024,
+                      window="hanning").get_json()
+    resp = client.get(f"/api/analyses/{analise['id']}/spectrogram")
+    assert resp.status_code == 200
+    assert resp.mimetype == "image/png"
+    assert resp.data[:8] == b"\x89PNG\r\n\x1a\n"
+
+
+def test_espectrograma_analise_inexistente(client):
+    assert_error(client.get("/api/analyses/999/spectrogram"), 404,
+                 "ANALYSIS_NOT_FOUND")
+
+
+def test_espectrograma_wav_apagado_do_disco(client, tmp_path):
+    audio_id = upload(client).get_json()["id"]
+    analise = analyze(client, audio_id=audio_id, block_size=1024,
+                      window="hanning").get_json()
+    for arquivo in (tmp_path / "uploads").iterdir():
+        arquivo.unlink()
+    assert_error(client.get(f"/api/analyses/{analise['id']}/spectrogram"),
+                 404, "AUDIO_NOT_FOUND")
