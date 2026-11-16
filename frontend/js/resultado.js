@@ -45,6 +45,7 @@ async function carregar() {
   document.getElementById("cartao-grafico").hidden = false;
   desenharGrafico(analise, escalaAtual);
   ligarInteracao();
+  document.getElementById("cartao-espectrograma").hidden = false;   // T29
 }
 
 /* ---------- 3a. Resumo ---------- */

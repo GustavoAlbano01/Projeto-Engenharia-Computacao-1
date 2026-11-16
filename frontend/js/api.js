@@ -36,6 +36,10 @@ async function requisitar(caminho, opcoes = {}) {
   // DELETE devolve 204, sem corpo: não há JSON para ler.
   if (resposta.status === 204) return null;
 
+  // Imagem (espectrograma - T29): devolve o arquivo (Blob), não JSON.
+  const tipo = resposta.headers.get("Content-Type") || "";
+  if (resposta.ok && tipo.startsWith("image/")) return resposta.blob();
+
   // Lê o corpo como JSON (pode falhar se não for JSON).
   let corpo = null;
   try {
@@ -91,4 +95,9 @@ function buscarAnalise(id) {
 /* RF009 - DELETE /api/analyses/{id} */
 function excluirAnalise(id) {
   return requisitar(`/analyses/${id}`, { method: "DELETE" });
+}
+
+/* RF006 - GET /api/analyses/{id}/spectrogram (imagem PNG) */
+function buscarEspectrograma(id) {
+  return requisitar(`/analyses/${id}/spectrogram`);
 }

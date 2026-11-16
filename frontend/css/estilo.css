@@ -128,3 +128,6 @@ th { background: var(--azul-claro); }
 /* ---------- ações da tabela do histórico (INT03) ---------- */
 td a + button { margin-left: 12px; }
 button.pequeno { padding: 4px 10px; font-size: 0.9rem; }
+
+/* ---------- espectrograma (RF006 - T29) ---------- */
+.espectrograma { display: block; max-width: 100%; height: auto; margin-top: 12px; }
