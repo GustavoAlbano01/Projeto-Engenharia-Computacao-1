@@ -1,0 +1,7 @@
+tom,frequencia_hz,janela,frequencia_detectada_hz,magnitude_pico,perda_amplitude_db,nivel_10_bins_db,nivel_30_bins_db,bins_acima_de_menos_40db
+centro do bin,430.66,rectangular,430.66,0.5,0.0,-114.0,-114.0,1
+centro do bin,430.66,hanning,430.66,0.5,0.0,-100.0,-114.0,3
+centro do bin,430.66,hamming,430.66,0.5,0.0,-101.9,-114.0,3
+entre dois bins,452.2,rectangular,430.66,0.3186,-3.91,-25.5,-34.9,67
+entre dois bins,452.2,hanning,473.73,0.4245,-1.42,-69.7,-97.0,6
+entre dois bins,452.2,hamming,430.66,0.4088,-1.75,-44.8,-53.7,4
