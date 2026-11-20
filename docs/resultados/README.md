@@ -23,3 +23,97 @@ Gerados por `python backend/tools/medir_tempo.py` (3 repetições por combinaç�
 - As medições foram feitas em um desktop (Ryzen 5 7600X). Em máquinas mais
   lentas o tempo aumenta, mas a folga de 5,4× em relação ao limite do NF004
   indica que o requisito continua atendido em computadores comuns.
+
+
+# Validação com sinais de referência (T32 - RF010, NF012)
+
+Gerados por `python backend/tools/validar_picos.py`. Não dependem do
+computador: os sinais são sintéticos e o resultado é sempre o mesmo.
+
+## Método
+- Tons puros de 440 Hz e 1000 Hz, amplitude 0,5, 3 s, gerados pelo T10.
+- Taxas de 8000, 22050, 44100 e 48000 Hz.
+- Janelas retangular, Hanning e Hamming; blocos de 512, 1024, 2048 e 4096.
+- Caminho igual ao da API: WAV -> `read_wav` (T11) -> `analyze` (T20).
+- Critério (NF012): |erro| <= fs/N (um bin).
+
+## Arquivos
+- `validacao_picos.csv`: as 96 combinações (2 tons × 4 taxas × 3 janelas × 4 blocos),
+  com resolução, frequência detectada, erro em Hz, em % e em bins, e magnitude do pico.
+- `tabela1_artigo.csv`: Tabela 1 do artigo (fs = 44,1 kHz, 24 linhas).
+
+## Conclusões
+- 96 de 96 casos dentro de um bin: NF012 atendido.
+- O erro nunca passou de meio bin (pior caso: 0,453 bin), ou seja, o pico
+  sempre caiu no bin mais próximo da frequência real.
+- Maior erro relativo: 6,53 % (440 Hz, fs = 48 kHz, N = 512, Δf = 93,75 Hz).
+  Com N = 4096 o erro relativo fica entre 0 % e 1,21 % (1000 Hz a 8 kHz
+  cai exatamente sobre um bin).
+- A janela não mudou a frequência detectada em nenhum caso; ela muda a
+  magnitude do pico e o vazamento (ver `test_validacao_dsp.py`). Quem define o
+  erro em frequência é a resolução Δf = fs/N.
+
+
+# Experimento de vazamento espectral (T33 - RF003, RF010)
+
+Gerados por `python backend/tools/experimento_vazamento.py`. Não dependem do
+computador: os sinais são sintéticos e o resultado é sempre o mesmo.
+
+## Método
+- Tom puro de amplitude 0,5, fs = 44,1 kHz, N = 1024 (Δf ≈ 43,07 Hz), 3 s.
+- Dois casos: no centro do bin 10 (430,66 Hz) e entre os bins 10 e 11
+  (452,20 Hz), que é o pior caso de vazamento.
+- Janelas retangular, Hanning e Hamming, pelo mesmo caminho da API.
+
+## Arquivos
+- `vazamento.csv`: por tom e janela, magnitude e perda de amplitude do pico,
+  nível a 10 e a 30 bins do pico (dB) e nº de bins a menos de 40 dB do pico.
+- `figura1_vazamento.png`: Figura 1 do artigo. (a) espectro em dB de 0 a
+  2 kHz; (b) detalhe linear perto do pico, com a amplitude real (0,5).
+
+## Conclusões
+- No centro do bin as três janelas medem a amplitude exata (0,5).
+- Entre dois bins, a perda de amplitude foi de −3,91 dB (retangular),
+  −1,42 dB (Hanning) e −1,75 dB (Hamming), iguais aos valores teóricos de
+  Harris (1978): −3,92, −1,42 e −1,75 dB.
+- A 30 bins do pico, o vazamento ficou em −34,9 dB (retangular),
+  −53,7 dB (Hamming) e −97,0 dB (Hanning).
+- A retangular espalha energia por 67 bins acima de −40 dB; Hanning e
+  Hamming, por 6 e 4 bins. Perto do pico a Hamming é melhor; longe dele,
+  a Hanning atenua muito mais.
+- Com o tom exatamente no meio de dois bins, os bins 10 e 11 têm a mesma
+  magnitude; por isso o pico detectado foi 430,66 Hz ou 473,73 Hz,
+  conforme a janela (erro de meio bin, dentro do critério do NF012).
+
+
+# Benchmark DFT × FFT (T34 - RF003)
+
+Gerados por `python backend/tools/benchmark_dft_fft.py` (cerca de 20 s).
+Os tempos dependem do computador; o ambiente e os valores medidos ficam em
+`benchmark_dft_fft.md`, gerado junto com os outros arquivos.
+
+## Método
+- Um bloco de N amostras aleatórias (semente fixa), N = 64 a 8192 para a
+  DFT direta (T15) e N = 64 a 65536 para a FFT própria (T16).
+- Tempo = menor de 5 medições; chamadas rápidas são repetidas em laço.
+- Para cada N da DFT, o script confere que a FFT dá o mesmo resultado.
+- Ordem de crescimento: inclinação a da reta log t × log N (t ∝ N^a),
+  usando só N >= 1024 (DFT) e N >= 2048 (FFT).
+
+## Arquivos
+- `benchmark_dft_fft.csv`: tempo por N, razão DFT/FFT medida e teórica (N/log₂N).
+- `benchmark_dft_fft.md`: ambiente da medição, inclinações e ganho da FFT.
+- `figura2_dft_fft.png`: Figura 2 do artigo, em escala log-log, com as
+  curvas teóricas ∝ N² e ∝ N·log₂N.
+- `dft_fft.csv` (T21) continua valendo para N = 512 a 4096.
+
+## Conclusões
+- A inclinação da DFT fica perto de 2: confirma o custo N².
+- A inclinação da FFT fica perto de 1 (o valor de N·log₂N nessa faixa é
+  1,11): confirma o custo N·log₂N.
+- Com N pequeno (até ~512 na FFT) o tempo quase não muda com N: domina o
+  custo fixo das chamadas do Python, e não a conta em si.
+- A razão DFT/FFT medida passa da teórica N/log₂N porque as duas não têm o
+  mesmo custo por operação: a DFT tem um laço em Python para cada
+  frequência, e a FFT faz cada estágio de uma vez com o NumPy. A teoria
+  prevê como o tempo cresce com N, não o valor exato da razão.
