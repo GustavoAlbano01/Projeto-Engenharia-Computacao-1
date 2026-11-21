@@ -52,3 +52,35 @@ computador: os sinais são sintéticos e o resultado é sempre o mesmo.
 - A janela não mudou a frequência detectada em nenhum caso; ela muda a
   magnitude do pico e o vazamento (ver `test_validacao_dsp.py`). Quem define o
   erro em frequência é a resolução Δf = fs/N.
+  
+
+# Experimento de vazamento espectral (T33 - RF003, RF010)
+
+Gerados por `python backend/tools/experimento_vazamento.py`. Não dependem do
+computador: os sinais são sintéticos e o resultado é sempre o mesmo.
+
+## Método
+- Tom puro de amplitude 0,5, fs = 44,1 kHz, N = 1024 (Δf ≈ 43,07 Hz), 3 s.
+- Dois casos: no centro do bin 10 (430,66 Hz) e entre os bins 10 e 11
+  (452,20 Hz), que é o pior caso de vazamento.
+- Janelas retangular, Hanning e Hamming, pelo mesmo caminho da API.
+
+## Arquivos
+- `vazamento.csv`: por tom e janela, magnitude e perda de amplitude do pico,
+  nível a 10 e a 30 bins do pico (dB) e nº de bins a menos de 40 dB do pico.
+- `figura1_vazamento.png`: Figura 1 do artigo. (a) espectro em dB de 0 a
+  2 kHz; (b) detalhe linear perto do pico, com a amplitude real (0,5).
+
+## Conclusões
+- No centro do bin as três janelas medem a amplitude exata (0,5).
+- Entre dois bins, a perda de amplitude foi de −3,91 dB (retangular),
+  −1,42 dB (Hanning) e −1,75 dB (Hamming), iguais aos valores teóricos de
+  Harris (1978): −3,92, −1,42 e −1,75 dB.
+- A 30 bins do pico, o vazamento ficou em −34,9 dB (retangular),
+  −53,7 dB (Hamming) e −97,0 dB (Hanning).
+- A retangular espalha energia por 67 bins acima de −40 dB; Hanning e
+  Hamming, por 6 e 4 bins. Perto do pico a Hamming é melhor; longe dele,
+  a Hanning atenua muito mais.
+- Com o tom exatamente no meio de dois bins, os bins 10 e 11 têm a mesma
+  magnitude; por isso o pico detectado foi 430,66 Hz ou 473,73 Hz,
+  conforme a janela (erro de meio bin, dentro do critério do NF012).
