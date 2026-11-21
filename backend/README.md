@@ -14,8 +14,6 @@ Pasta `uploads/`: arquivos de áudio enviados (o conteúdo não é versionado).
 
 ## Estado atual
 
-## Estado atual
-
 As rotas seguem o contrato v1 e já funcionam com dados reais:
 
 - `POST /api/audios` lê e valida o WAV PCM 16 bits (T11, T12) e grava no banco;
@@ -24,7 +22,8 @@ As rotas seguem o contrato v1 e já funcionam com dados reais:
 - `GET` e `DELETE /api/analyses` leem e apagam do banco: o histórico
   continua depois de reiniciar o servidor.
 
-Falta: espectrograma (RF006, desejável — hoje responde 501).
+`GET /api/analyses/<id>/spectrogram` gera a imagem PNG do espectrograma
+(RF006, T29) com o Matplotlib.
 
 Os arquivos de `mocks/` continuam como exemplos do contrato para o frontend.
 
@@ -37,7 +36,11 @@ backend/
 ├── requirements.txt
 ├── mocks/              exemplos de resposta do contrato
 ├── tools/
-│   └── gerar_sinais.py gera os WAV de teste (T10)
+│   ├── gerar_sinais.py        gera os WAV de teste (T10)
+│   ├── medir_tempo.py         mede o tempo de resposta (T21)
+│   ├── validar_picos.py       validação com sinais de referência (T32)
+│   ├── experimento_vazamento.py  vazamento espectral (T33)
+│   └── benchmark_dft_fft.py   benchmark DFT x FFT (T34)
 ├── uploads/            áudios enviados (não versionado)
 ├── instance/           aea.db, o banco SQLite (não versionado)
 └── app/
@@ -47,40 +50,19 @@ backend/
     ├── database.py     conexão SQLite e criação das tabelas
     ├── models.py       tabelas audios e analyses
     ├── db_store.py     grava e lê áudios e análises no SQLite
-    ├── dsp/            leitor WAV, janelas, DFT, FFT, espectro e análise    └── routes/
+    ├── dsp/            leitor WAV, janelas, DFT, FFT, espectro, espectrograma e análise
+    └── routes/
         ├── audios.py   POST /api/audios
         └── analyses.py /api/analyses (POST, GET, DELETE, espectrograma)
 ```
 
 ## Configuração e Instalação
 
-Siga os passos abaixo para configurar o ambiente e instalar as dependências necessárias.
+Instalação completa (ambiente virtual, banco e execução) no
+[`README.md`](../README.md) da raiz do repositório. O ambiente virtual `.venv`
+fica na **raiz** e serve para o backend e para os testes.
 
-### 0. Entrar na pasta do backend
-```bash
-cd backend
-```
-
-### 1. Criar o Ambiente Virtual
-```bash
-python -m venv .venv
-```
-
-### 2. Ativar o Ambiente Virtual
-* **Windows (PowerShell):**
-```powershell
-.\.venv\Scripts\Activate.ps1
-```
-
-* **Linux:**
-```bash
-source .venv/bin/activate
-```
-
-### 3. Instalar as Dependências
-```bash
-pip install -r requirements.txt
-```
+Dependências do backend: `backend/requirements.txt` (Python 3.12 ou superior).
 
 ## Banco de dados
 

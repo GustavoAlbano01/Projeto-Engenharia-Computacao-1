@@ -21,13 +21,77 @@ docs/       Documento de requisitos, artigo INIC, diagramas e decisões
 
 ## Tecnologias
 
-- Python 3.10 ou superior, Flask, Flask-CORS, SQLAlchemy, SQLite, NumPy
+- Python 3.12 ou superior, Flask, Flask-CORS, SQLAlchemy, SQLite, NumPy, Matplotlib (imagem do espectrograma)
 - HTML, CSS e JavaScript, com Plotly.js distribuído localmente (o sistema funciona sem internet)
 - SciPy e pytest apenas para testes e conferência
 
 ## Como executar
 
-*Em construção.* As instruções de instalação e execução serão adicionadas quando o backend base estiver pronto.
+Os comandos abaixo são para o PowerShell (Windows). No Linux, troque a
+ativação do ambiente por `source .venv/bin/activate`.
+
+### 1. Pré-requisito
+
+Python 3.12 ou superior (`python --version`). Para rodar o sistema não é
+preciso internet depois da instalação (NF011).
+
+### 2. Instalar (uma vez só, na raiz do repositório)
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r backend/requirements.txt
+```
+
+Se o PowerShell bloquear a ativação, rode antes
+`Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass`.
+
+### 3. Criar o banco de dados (uma vez só)
+
+```powershell
+cd backend
+python init_db.py
+```
+
+Cria `backend/instance/aea.db`. Pode ser repetido sem perder dados.
+
+### 4. Iniciar o sistema
+
+Ainda dentro de `backend/`, com o ambiente ativo:
+
+```powershell
+python run.py
+```
+
+O Flask serve a API e o frontend. Abra **http://localhost:5000/** no
+navegador, envie um arquivo WAV (PCM 16 bits, até 60 MB), escolha janela e
+tamanho de bloco e veja o espectro. As análises ficam no histórico.
+
+Para encerrar, pressione `Ctrl+C` no terminal.
+
+### 5. Rodar os testes (opcional)
+
+Na raiz do repositório, com o ambiente ativo:
+
+```powershell
+python -m pytest -q
+```
+
+### 6. Sinais de referência (opcional)
+
+Para gerar WAV com tons de frequência conhecida e testar o sistema, veja
+`backend/README.md` (seção "Sinais de teste"). Os resultados da validação
+estão em `docs/resultados/`.
+
+### Problemas comuns
+
+| Sintoma | Causa provável |
+|---|---|
+| `ModuleNotFoundError: flask_cors` (ou outro módulo) | Ambiente não ativado ou `pip install` não executado |
+| `python` não é reconhecido | Python não está no PATH; reinstale marcando "Add to PATH" |
+| Erro ao instalar NumPy ou SciPy | Python anterior à 3.12 |
+| Porta 5000 ocupada | Outro programa usa a porta; feche-o e rode `python run.py` de novo |
+| Página abre mas o histórico vem vazio | Normal na primeira execução: ainda não há análises |
 
 ## Documentação
 
