@@ -52,7 +52,7 @@ computador: os sinais são sintéticos e o resultado é sempre o mesmo.
 - A janela não mudou a frequência detectada em nenhum caso; ela muda a
   magnitude do pico e o vazamento (ver `test_validacao_dsp.py`). Quem define o
   erro em frequência é a resolução Δf = fs/N.
-  
+
 
 # Experimento de vazamento espectral (T33 - RF003, RF010)
 
@@ -84,3 +84,36 @@ computador: os sinais são sintéticos e o resultado é sempre o mesmo.
 - Com o tom exatamente no meio de dois bins, os bins 10 e 11 têm a mesma
   magnitude; por isso o pico detectado foi 430,66 Hz ou 473,73 Hz,
   conforme a janela (erro de meio bin, dentro do critério do NF012).
+
+
+# Benchmark DFT × FFT (T34 - RF003)
+
+Gerados por `python backend/tools/benchmark_dft_fft.py` (cerca de 20 s).
+Os tempos dependem do computador; o ambiente e os valores medidos ficam em
+`benchmark_dft_fft.md`, gerado junto com os outros arquivos.
+
+## Método
+- Um bloco de N amostras aleatórias (semente fixa), N = 64 a 8192 para a
+  DFT direta (T15) e N = 64 a 65536 para a FFT própria (T16).
+- Tempo = menor de 5 medições; chamadas rápidas são repetidas em laço.
+- Para cada N da DFT, o script confere que a FFT dá o mesmo resultado.
+- Ordem de crescimento: inclinação a da reta log t × log N (t ∝ N^a),
+  usando só N >= 1024 (DFT) e N >= 2048 (FFT).
+
+## Arquivos
+- `benchmark_dft_fft.csv`: tempo por N, razão DFT/FFT medida e teórica (N/log₂N).
+- `benchmark_dft_fft.md`: ambiente da medição, inclinações e ganho da FFT.
+- `figura2_dft_fft.png`: Figura 2 do artigo, em escala log-log, com as
+  curvas teóricas ∝ N² e ∝ N·log₂N.
+- `dft_fft.csv` (T21) continua valendo para N = 512 a 4096.
+
+## Conclusões
+- A inclinação da DFT fica perto de 2: confirma o custo N².
+- A inclinação da FFT fica perto de 1 (o valor de N·log₂N nessa faixa é
+  1,11): confirma o custo N·log₂N.
+- Com N pequeno (até ~512 na FFT) o tempo quase não muda com N: domina o
+  custo fixo das chamadas do Python, e não a conta em si.
+- A razão DFT/FFT medida passa da teórica N/log₂N porque as duas não têm o
+  mesmo custo por operação: a DFT tem um laço em Python para cada
+  frequência, e a FFT faz cada estágio de uma vez com o NumPy. A teoria
+  prevê como o tempo cresce com N, não o valor exato da razão.
