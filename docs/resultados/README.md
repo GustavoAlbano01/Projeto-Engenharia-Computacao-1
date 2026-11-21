@@ -23,3 +23,32 @@ Gerados por `python backend/tools/medir_tempo.py` (3 repetições por combinaç�
 - As medições foram feitas em um desktop (Ryzen 5 7600X). Em máquinas mais
   lentas o tempo aumenta, mas a folga de 5,4× em relação ao limite do NF004
   indica que o requisito continua atendido em computadores comuns.
+
+
+# Validação com sinais de referência (T32 - RF010, NF012)
+
+Gerados por `python backend/tools/validar_picos.py`. Não dependem do
+computador: os sinais são sintéticos e o resultado é sempre o mesmo.
+
+## Método
+- Tons puros de 440 Hz e 1000 Hz, amplitude 0,5, 3 s, gerados pelo T10.
+- Taxas de 8000, 22050, 44100 e 48000 Hz.
+- Janelas retangular, Hanning e Hamming; blocos de 512, 1024, 2048 e 4096.
+- Caminho igual ao da API: WAV -> `read_wav` (T11) -> `analyze` (T20).
+- Critério (NF012): |erro| <= fs/N (um bin).
+
+## Arquivos
+- `validacao_picos.csv`: as 96 combinações (2 tons × 4 taxas × 3 janelas × 4 blocos),
+  com resolução, frequência detectada, erro em Hz, em % e em bins, e magnitude do pico.
+- `tabela1_artigo.csv`: Tabela 1 do artigo (fs = 44,1 kHz, 24 linhas).
+
+## Conclusões
+- 96 de 96 casos dentro de um bin: NF012 atendido.
+- O erro nunca passou de meio bin (pior caso: 0,453 bin), ou seja, o pico
+  sempre caiu no bin mais próximo da frequência real.
+- Maior erro relativo: 6,53 % (440 Hz, fs = 48 kHz, N = 512, Δf = 93,75 Hz).
+  Com N = 4096 o erro relativo fica entre 0 % e 1,21 % (1000 Hz a 8 kHz
+  cai exatamente sobre um bin).
+- A janela não mudou a frequência detectada em nenhum caso; ela muda a
+  magnitude do pico e o vazamento (ver `test_validacao_dsp.py`). Quem define o
+  erro em frequência é a resolução Δf = fs/N.
