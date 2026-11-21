@@ -131,3 +131,12 @@ button.pequeno { padding: 4px 10px; font-size: 0.9rem; }
 
 /* ---------- espectrograma (RF006 - T29) ---------- */
 .espectrograma { display: block; max-width: 100%; height: auto; margin-top: 12px; }
+
+
+/* Botão secundário desativado: cinza, para não parecer clicável (T25). */
+button.secundario:disabled {
+  background: #ffffff;
+  color: #9aa7bd;
+  border-color: #c5ccd8;
+  cursor: not-allowed;
+}
