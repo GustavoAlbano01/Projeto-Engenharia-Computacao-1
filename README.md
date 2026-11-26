@@ -6,8 +6,8 @@ Sistema web, executado localmente, que lê um arquivo de áudio WAV, aplica jane
 
 ## Equipe
 
-- Eduardo Peron
-- Gustavo Albano Nunes
+- Eduardo Peron — API Flask e contrato JSON, leitura/validação de WAV, banco SQLite (modelos e DbStore), telas do frontend (início, histórico, exclusão), espectrograma, medição de tempo de resposta, testes de integração e documento de requisitos
+- Gustavo Albano Nunes — núcleo DSP (DFT, FFT radix-2, janelas, espectro e pico), gerador de sinais de teste, gráfico e interação da tela de resultado, validação (tabela de picos, vazamento espectral, benchmark DFT × FFT)
 - Orientador: Prof. Me. Hélio Esperidião
 
 ## Estrutura do repositório
@@ -99,3 +99,19 @@ estão em `docs/resultados/`.
 - Artigo no padrão INIC: `docs/artigo/`
 - Decisões de projeto: `docs/decisoes.md`
 - Convenções de commits e fluxo de trabalho: `CONTRIBUTING.md`
+
+## Banco de dados
+
+SQLite, criado por `python backend/init_db.py` (cria `backend/instance/aea.db`).
+Nos arquivos da entrega, o schema, o backup, o diagrama ER e as instruções de
+restauração estão em `banco-de-dados/` (`schema.sql`, `backup.sql`,
+`diagrama-er.png`, `instrucoes-banco.md`).
+
+## Referências
+
+Ver `referencias/referencias-abnt.pdf` (na entrega) e a seção Referências do
+artigo em `docs/artigo/`.
+
+## Repositório
+
+https://github.com/GustavoAlbano01/Projeto-Engenharia-Computacao-1
