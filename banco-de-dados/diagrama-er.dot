@@ -1,0 +1,31 @@
+digraph ER {
+  rankdir=LR; fontname="Helvetica"; nodesep=0.8;
+  node [shape=plaintext fontname="Helvetica" fontsize=11];
+  edge [fontname="Helvetica" fontsize=10];
+  audios [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5">
+    <TR><TD BGCOLOR="#1F4E79"><FONT COLOR="white"><B>audios</B></FONT></TD></TR>
+    <TR><TD ALIGN="LEFT"><B>PK</B> id : INTEGER</TD></TR>
+    <TR><TD ALIGN="LEFT">filename : VARCHAR(255)</TD></TR>
+    <TR><TD ALIGN="LEFT">stored_path : VARCHAR(500)</TD></TR>
+    <TR><TD ALIGN="LEFT">format : VARCHAR(20)</TD></TR>
+    <TR><TD ALIGN="LEFT">bits_per_sample : INTEGER</TD></TR>
+    <TR><TD ALIGN="LEFT">sample_rate_hz : INTEGER</TD></TR>
+    <TR><TD ALIGN="LEFT">channels : INTEGER</TD></TR>
+    <TR><TD ALIGN="LEFT">num_samples : INTEGER</TD></TR>
+    <TR><TD ALIGN="LEFT">size_bytes : INTEGER</TD></TR>
+    <TR><TD ALIGN="LEFT">uploaded_at : DATETIME</TD></TR></TABLE>>];
+  analyses [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5">
+    <TR><TD BGCOLOR="#1F4E79"><FONT COLOR="white"><B>analyses</B></FONT></TD></TR>
+    <TR><TD ALIGN="LEFT"><B>PK</B> id : INTEGER</TD></TR>
+    <TR><TD ALIGN="LEFT"><B>FK</B> audio_id : INTEGER (índice)</TD></TR>
+    <TR><TD ALIGN="LEFT">created_at : DATETIME (índice)</TD></TR>
+    <TR><TD ALIGN="LEFT">block_size : INTEGER</TD></TR>
+    <TR><TD ALIGN="LEFT">window : VARCHAR(20)</TD></TR>
+    <TR><TD ALIGN="LEFT">blocks_used : INTEGER</TD></TR>
+    <TR><TD ALIGN="LEFT">magnitudes : JSON</TD></TR>
+    <TR><TD ALIGN="LEFT">peak_bin : INTEGER</TD></TR>
+    <TR><TD ALIGN="LEFT">peak_frequency_hz : FLOAT</TD></TR>
+    <TR><TD ALIGN="LEFT">peak_magnitude : FLOAT</TD></TR>
+    <TR><TD ALIGN="LEFT">warnings : JSON</TD></TR></TABLE>>];
+  audios -> analyses [label="1 : N\nON DELETE CASCADE" arrowhead=crow arrowtail=tee dir=both];
+}
